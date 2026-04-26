@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<!--
+  simple_camera.sdf — Gazebo Classic (Gazebo 11) RGB Camera
+  ==========================================================
+  A static RGB camera positioned to view the Panda arm workspace.
+
+  Publishes:
+    /camera/image_raw   (sensor_msgs/Image, 30 Hz, 640×480)
+    /camera/camera_info (sensor_msgs/CameraInfo)
+
+  Spawn command (run after Gazebo is up):
+    ros2 run gazebo_ros spawn_entity.py \
+      -entity rgb_camera \
+      -file $(ros2 pkg prefix my_robot_controller)/share/my_robot_controller/config/simple_camera.sdf
+
+  Position: x=1.8m in front of arm, z=1.4m height, pitched down ~25° to frame the table.
+  Adjust <pose> below if your scene layout differs.
+-->
+<sdf version="1.6">
+  <model name="rgb_camera">
+    <static>true</static>
+
+    <!--
+      Pose: x y z roll pitch yaw (radians)
+      Sitting 1.8 m in front of the arm (along X), 1.4 m up, pitched 25° down.
+      Yaw = π so the camera faces the arm (toward negative X).
+    -->
+    <pose>1.8 0.0 1.4  0 0.436 3.14159</pose>
+
+    <link name="camera_link">
+      <!-- Minimal inertial so Gazebo does not warn about massless links -->
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>0.0001</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>0.0001</iyy><iyz>0</iyz>
+          <izz>0.0001</izz>
+        </inertia>
+      </inertial>
+
+      <!-- Visual cylinder so the camera is visible in the Gazebo GUI -->
+      <visual name="camera_visual">
+        <geometry>
+          <cylinder>
+            <radius>0.025</radius>
+            <length>0.06</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.1 0.1 0.1 1</ambient>
+          <diffuse>0.1 0.1 0.1 1</diffuse>
+        </material>
+      </visual>
+
+      <sensor name="rgb_camera_sensor" type="camera">
+        <always_on>true</always_on>
+        <update_rate>30</update_rate>   <!-- 30 Hz input; perception_node skips every 2nd -->
+        <visualize>false</visualize>     <!-- set true to see frustum in Gazebo GUI -->
+
+        <camera name="camera">
+          <!-- 60° horizontal FOV ≈ typical webcam -->
+          <horizontal_fov>1.0472</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.05</near>
+            <far>50.0</far>
+          </clip>
+          <!-- No distortion — clean sim image for YOLOv8 -->
+          <distortion>
+            <k1>0.0</k1><k2>0.0</k2><k3>0.0</k3>
+            <p1>0.0</p1><p2>0.0</p2>
+            <center>0.5 0.5</center>
+          </distortion>
+        </camera>
+
+        <!--
+          gazebo_ros_camera plugin — publishes sensor_msgs/Image to ROS 2.
+          Works with Gazebo Classic (Gazebo 11) + ROS 2 Humble.
+        -->
+        <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+          <ros>
+            <!-- Empty namespace → topics at /camera/image_raw (no prefix) -->
+            <namespace></namespace>
+            <remapping>image_raw:=/camera/image_raw</remapping>
+            <remapping>camera_info:=/camera/camera_info</remapping>
+          </ros>
+          <camera_name>camera</camera_name>
+          <frame_name>camera_link</frame_name>
+          <!-- Publish at native 30 Hz; set to 0 for sensor rate -->
+          <update_rate>30.0</update_rate>
+        </plugin>
+      </sensor>
+    </link>
+  </model>
+</sdf>

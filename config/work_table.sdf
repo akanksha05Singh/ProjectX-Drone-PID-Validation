@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!--
+  work_table.sdf — Gazebo model matching the MoveIt collision object
+  ==================================================================
+  Dimensions and position exactly match the CollisionObject added in
+  week1_test_node.py:
+    size:     1.20 x 0.80 x 0.05 m
+    position: x=0.50  y=0.00  z=-0.03  (in panda_link0 frame)
+
+  WHY static=true?
+    A static model has infinite mass and is pinned to the world.
+    It can never move from collisions or gravity. This is correct for
+    a fixed work surface — we only want the arm to route around it,
+    not knock it over.
+
+  WHY two elements (collision + visual)?
+    collision — Gazebo physics engine uses this for contact detection.
+    visual    — Gazebo GUI uses this to render the gray box on screen.
+    Both must match or you get a box that looks different from what
+    the physics engine is actually colliding against.
+-->
+<sdf version="1.6">
+  <model name="work_table">
+    <static>true</static>
+    <pose>0.50 0.00 -0.03 0 0 0</pose>
+
+    <link name="table_link">
+
+      <!-- Physics collision geometry -->
+      <collision name="table_collision">
+        <geometry>
+          <box>
+            <size>1.20 0.80 0.05</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.8</mu>
+              <mu2>0.8</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+
+      <!-- Visual geometry (gray table surface) -->
+      <visual name="table_visual">
+        <geometry>
+          <box>
+            <size>1.20 0.80 0.05</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.55 0.55 0.55 1.0</ambient>
+          <diffuse>0.55 0.55 0.55 1.0</diffuse>
+          <specular>0.1 0.1 0.1 1.0</specular>
+        </material>
+      </visual>
+
+    </link>
+  </model>
+</sdf>

@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd"
+            schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>my_robot_controller</name>
+  <version>0.0.1</version>
+  <description>
+    Reformerz Healthcare robotics internship package.
+    Week 1: Franka Panda motion planning via MoveIt 2 (moveit_py).
+    Week 2: YOLOv8n + OpenVINO perception pipeline.
+  </description>
+
+  <maintainer email="user@example.com">user</maintainer>
+  <license>Apache-2.0</license>
+
+  <!--
+    <depend> covers build-time, exec-time, and test-time in one tag.
+    Use this for Python packages — there is no compilation step, but
+    rosdep still needs to know what to install via apt.
+  -->
+
+  <!-- ROS 2 Python client library -->
+  <depend>rclpy</depend>
+
+  <!--
+    rosgraph_msgs: provides rosgraph_msgs/msg/Clock, used by ClockWaiter
+    in week1_test_node.py to detect when Gazebo's sim clock is live.
+    Missing this causes ImportError on a fresh machine.
+  -->
+  <depend>rosgraph_msgs</depend>
+
+  <!--
+    moveit_ros_planning_interface: the C++ shared library that the
+    moveit_py Python bindings wrap at runtime. rosdep resolves this to:
+      apt: ros-humble-moveit-ros-planning-interface
+    Even though we import Python, this C++ lib must exist on the system.
+  -->
+  <depend>moveit_ros_planning_interface</depend>
+
+  <!-- Message types used for collision objects and poses -->
+  <depend>moveit_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>shape_msgs</depend>
+
+  <!--
+    tf2_ros: coordinate frame transforms.
+    MoveIt relies on it internally; you will need it directly in Week 2+
+    when computing transforms between frames (e.g. camera → robot base).
+  -->
+  <depend>tf2_ros</depend>
+
+  <!-- Gazebo Classic + ros2_control integration -->
+  <depend>gazebo_ros</depend>
+  <depend>gazebo_ros2_control</depend>
+  <depend>ros2_control</depend>
+  <depend>ros2_controllers</depend>
+  <depend>joint_state_broadcaster</depend>
+  <depend>joint_trajectory_controller</depend>
+
+  <!-- Launch infrastructure -->
+  <depend>launch</depend>
+  <depend>launch_ros</depend>
+
+  <!--
+    exec_depend: these are only needed at runtime (by gazebo_panda.launch.py),
+    not at build time. Declaring them ensures `rosdep install` pulls them on
+    a fresh machine.
+
+    robot_state_publisher     — publishes the URDF to /robot_description
+    moveit_resources_panda_description   — provides panda.urdf (URDF source)
+    moveit_resources_panda_moveit_config — provides SRDF, kinematics.yaml,
+                                           moveit_controllers.yaml, moveit.rviz
+  -->
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>moveit_resources_panda_description</exec_depend>
+  <exec_depend>moveit_resources_panda_moveit_config</exec_depend>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Week 3 — Drone tracking / MAVROS dependencies
+       ═══════════════════════════════════════════════════════════ -->
+
+  <!--
+    mavros: ROS 2 MAVLink bridge to PX4 SITL.
+    mavros_msgs: State, CommandBool, SetMode, TwistStamped setpoints.
+  -->
+  <depend>mavros</depend>
+  <depend>mavros_msgs</depend>
+
+  <!-- std_msgs: String (tracking status) -->
+  <depend>std_msgs</depend>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       Week 2 — Perception pipeline dependencies
+       ═══════════════════════════════════════════════════════════ -->
+
+  <!--
+    sensor_msgs: sensor_msgs/msg/Image — input from Gazebo camera.
+    vision_msgs: vision_msgs/msg/Detection2DArray — standard 2-D detection output.
+    cv_bridge   : converts sensor_msgs/Image ↔ OpenCV Mat.
+    image_transport: optional compressed transport (future-proof).
+  -->
+  <depend>sensor_msgs</depend>
+  <depend>vision_msgs</depend>
+  <depend>cv_bridge</depend>
+  <depend>image_transport</depend>
+
+  <!--
+    Python packages (installed via pip, NOT rosdep):
+      ultralytics  — YOLOv8 model + OpenVINO export
+      openvino     — Intel OpenVINO runtime
+      opencv-python — cv2 (cv_bridge pulls this but be explicit)
+      psutil       — used by stress_test.py for memory monitoring
+
+    These are declared as exec_depend so `colcon build` does not
+    try to apt-install them. Install manually with the pip commands
+    in the README.
+  -->
+  <exec_depend>python3-opencv</exec_depend>
+
+  <!-- Linting / testing tools required by ament -->
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

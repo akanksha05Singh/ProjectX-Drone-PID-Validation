@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<!--
+  coke_can_simple.sdf — A simple cylinder resembling a beverage can
+  =================================================================
+  YOLOv8n (COCO) is trained to detect class 39 = "bottle".
+  This cylinder is red/silver like a real can and sits on the table
+  directly in the camera's field of view.
+
+  Spawn command (run after Gazebo + camera are up):
+    ros2 run gazebo_ros spawn_entity.py \
+      -entity coke_can \
+      -file $(ros2 pkg prefix my_robot_controller)/share/my_robot_controller/config/coke_can_simple.sdf
+
+  Alternatively, if Gazebo has internet access, use the built-in model:
+    ros2 run gazebo_ros spawn_entity.py -entity coke_can -database coke_can \
+      -x 0.45 -y 0.0 -z 0.85
+
+  Position: x=0.45 m (in front of arm), z=0.85 m (on the table surface).
+  This puts it well within the camera frustum defined in simple_camera.sdf.
+-->
+<sdf version="1.6">
+  <model name="coke_can">
+    <static>false</static>
+    <pose>0.45 0.0 0.85  0 0 0</pose>
+
+    <link name="can_link">
+      <inertial>
+        <mass>0.390</mass>     <!-- 390 g — realistic full can weight -->
+        <inertia>
+          <ixx>0.000285</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>0.000285</iyy><iyz>0</iyz>
+          <izz>0.000095</izz>
+        </inertia>
+      </inertial>
+
+      <!-- Collision — cylinder matching a standard 330 ml can -->
+      <collision name="can_collision">
+        <geometry>
+          <cylinder>
+            <radius>0.033</radius>   <!-- 66 mm diameter -->
+            <length>0.115</length>   <!-- 115 mm height -->
+          </cylinder>
+        </geometry>
+        <surface>
+          <friction>
+            <ode><mu>0.6</mu><mu2>0.6</mu2></ode>
+          </friction>
+        </surface>
+      </collision>
+
+      <!-- Visual — red body (Coca-Cola red) so it stands out in camera feed -->
+      <visual name="can_body">
+        <geometry>
+          <cylinder>
+            <radius>0.033</radius>
+            <length>0.115</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.85 0.07 0.07 1</ambient>      <!-- Coke red -->
+          <diffuse>0.85 0.07 0.07 1</diffuse>
+          <specular>0.3 0.3 0.3 1</specular>
+        </material>
+      </visual>
+
+      <!-- Silver top cap -->
+      <visual name="can_top">
+        <pose>0 0 0.058  0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.029</radius>
+            <length>0.002</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.7 0.7 0.7 1</ambient>
+          <diffuse>0.7 0.7 0.7 1</diffuse>
+          <specular>0.9 0.9 0.9 1</specular>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>
