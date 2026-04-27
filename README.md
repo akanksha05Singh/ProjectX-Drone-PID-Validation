@@ -47,5 +47,13 @@ python3 src/my_robot_controller/scripts/generate_plots.py --csv logs/latest_pid_
 - **Low-Pass Filtering**: Exponential Moving Average (EMA) filter on error inputs to mitigate high-frequency IMU noise.
 - **Stress Sim Suite**: Real-time parameter injection for 6 critical failure modes.
 
+### 🛡️ Validation Guide (For Shiva)
+To reproduce the engineering results shown in the report:
+1. **Start the Controller**: 
+   `ros2 launch my_robot_controller drone_tracking.launch.py`
+2. **Inject Stress**: 
+   `python3 src/my_robot_controller/scripts/stress_sim.py --mode combined`
+3. **Observe Stability**: The PID controller will maintain a steady lock even as stressors are applied, whereas the P-only baseline would drift.
+
 ---
 **Lead Validation Engineer**: Shiva-Ready | **Date**: April 2026
