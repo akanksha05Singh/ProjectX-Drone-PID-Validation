@@ -214,6 +214,14 @@ def plot_states(df: pd.DataFrame, out: Path, title_tag: str = "") -> None:
         fontsize=13, color="white")
 
     t = df["elapsed_s"].values
+    if "state_num" not in df.columns:
+        _map = {"FAILSAFE": 0, "HOLD": 1, "SEARCH": 2, "TRACK": 3}
+        df = df.copy()
+        df["state_num"] = df["system_state"].map(_map).fillna(0).astype(int)
+    if "state_num" not in df.columns:
+        _map = {"FAILSAFE": 0, "HOLD": 1, "SEARCH": 2, "TRACK": 3}
+        df = df.copy()
+        df["state_num"] = df["system_state"].map(_map).fillna(0).astype(int)
     s = df["state_num"].values
 
     # Fill between state steps

@@ -67,8 +67,8 @@ class ScenarioRunner(Node):
         self.declare_parameter("occlusion_duration", 2.0) # s each occlusion lasts
         self.declare_parameter("error_offset_x",  0.3)    # normalised units
         self.declare_parameter("error_offset_y",  0.0)
-        self.declare_parameter("image_width",     128.0)
-        self.declare_parameter("image_height",    128.0)
+        self.declare_parameter("image_width",  128)
+        self.declare_parameter("image_height", 128)
 
         self._scenario:          str   = self.get_parameter("scenario").value
         self._flicker_prob:      float = self.get_parameter("flicker_prob").value
